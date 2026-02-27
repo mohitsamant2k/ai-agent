@@ -5,7 +5,7 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 from azure.core.credentials import AzureKeyCredential
-from agent_framework import ai_function
+from agent_framework import tool
 from agent_framework.azure import AzureOpenAIResponsesClient
 from pydantic import Field
 
@@ -24,7 +24,7 @@ if not endpoint or not api_key:
 # ─── Define Tools ────────────────────────────────────────────────────────────
 
 
-@ai_function
+@tool
 def get_weather(
     city: Annotated[str, Field(description="The city name to get weather for")],
 ) -> str:
@@ -42,7 +42,7 @@ def get_weather(
     return result
 
 
-@ai_function
+@tool
 def calculate(
     expression: Annotated[str, Field(description="A math expression to evaluate, e.g. '2 + 3 * 4'")],
 ) -> str:
@@ -59,7 +59,7 @@ def calculate(
         return f"Error: {e}"
 
 
-@ai_function
+@tool
 def get_current_time() -> str:
     """Get the current date and time."""
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -69,14 +69,13 @@ def get_current_time() -> str:
 
 # ─── Create Agent with Tools ────────────────────────────────────────────────
 
-credential = AzureKeyCredential(api_key)
 client = AzureOpenAIResponsesClient(
-    project_endpoint=endpoint,
+    endpoint=endpoint,
     deployment_name=model,
-    credential=credential,
+    api_key=api_key,
 )
 
-agent = client.create_agent(
+agent = client.as_agent(
     name="ToolAgent",
     instructions=(
         "You are a helpful assistant with access to tools. "

@@ -2,7 +2,6 @@ import asyncio
 import os
 
 from dotenv import load_dotenv
-from azure.core.credentials import AzureKeyCredential
 from agent_framework.azure import AzureOpenAIResponsesClient
 
 # Load environment variables from .env
@@ -18,15 +17,14 @@ if not endpoint or not api_key:
     raise ValueError("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY must be set in .env")
 
 # Create client using API key authentication
-credential = AzureKeyCredential(api_key)
 client = AzureOpenAIResponsesClient(
-    project_endpoint=endpoint,
+    endpoint=endpoint,
     deployment_name=model,
-    credential=credential,
+    api_key=api_key,
 )
 
-# Create an agent using create_agent
-agent = client.create_agent(
+# Create an agent using as_agent (new API)
+agent = client.as_agent(
     name="Assistant",
     instructions="You are a friendly assistant. Keep your answers brief.",
 )
@@ -41,7 +39,7 @@ async def main():
 
     # Streaming: receive tokens as they are generated
     print("\n🤖 Streaming response: ", end="", flush=True)
-    async for update in agent.run_stream("Tell me a one-sentence fun fact."):
+    async for update in agent.run("Tell me a one-sentence fun fact.", stream=True):
         if update.text:
             print(update.text, end="", flush=True)
     print()
