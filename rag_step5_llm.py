@@ -38,7 +38,7 @@ import numpy as np
 import chromadb
 from dotenv import load_dotenv
 from rag_utils import (
-    load_embedding_model, recursive_chunk, distance_to_similarity,
+    recursive_chunk, distance_to_similarity,
     PYTHON_DOC, AI_DOC, WEBDEV_DOC,
 )
 
@@ -50,9 +50,6 @@ from rag_utils import (
 print("=" * 65)
 print("SETUP: Building the knowledge base")
 print("=" * 65)
-
-print("\n📦 Loading embedding model...")
-embed_model = load_embedding_model()
 
 # Knowledge base documents imported from rag_utils (PYTHON_DOC, AI_DOC, WEBDEV_DOC)
 
