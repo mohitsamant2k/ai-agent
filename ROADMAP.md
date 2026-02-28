@@ -66,25 +66,19 @@
 - Feed top-5 chunks + question to AI → answer
 - 🔨 Build: basic RAG pipeline end-to-end
 
-**Step 6: Add PDF Support**
-- PyMuPDF or pdfplumber to extract text from PDFs
-- Handle tables, headers, page numbers
-- Metadata: track which page each chunk came from
-- 🔨 Build: upload any PDF and ask questions about it
-
-**Step 7: Hybrid Search (Vector + Keyword)**
+**Step 6: Hybrid Search (Vector + Keyword)**
 - Vector search: finds similar MEANING
 - BM25 keyword search: finds exact WORDS
 - Reciprocal Rank Fusion: merge both result lists
 - 🔨 Build: compare naive vs hybrid search quality
 
-**Step 8: Re-ranking**
+**Step 7: Re-ranking**
 - Cross-encoder re-ranker (more accurate than embeddings)
 - Scores each (question, document) pair directly
 - Slower but much more precise
 - 🔨 Build: add re-ranking step, measure improvement
 
-**Step 9: Source Citations**
+**Step 8: Source Citations**
 - Track which document + page answered the question
 - Show: "Based on report.pdf, page 3..."
 - Highlight the exact passage used

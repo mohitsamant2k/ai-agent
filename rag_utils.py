@@ -202,62 +202,6 @@ Node.js allows JavaScript to run on the server side. Express.js is the most popu
 """.strip()
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# PDF Page Content (Step 6)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-PYTHON_PDF_PAGES = [
-    # Page 1
-    """Python is a high-level, interpreted programming language created by Guido van Rossum and first released in 1991. It emphasizes code readability with its notable use of significant whitespace. Python supports multiple programming paradigms, including structured, object-oriented, and functional programming.
-
-One of Python's key strengths is its extensive standard library, often described as "batteries included." This library provides modules for file I/O, system calls, sockets, and even interfaces to graphical user interface toolkits. The standard library reduces the need for external dependencies in many common programming tasks.
-
-Python's package ecosystem is massive, with over 400,000 packages on PyPI (Python Package Index). Popular packages include NumPy for numerical computing, Pandas for data analysis, Flask and Django for web development, and TensorFlow and PyTorch for machine learning. The pip package manager makes it easy to install and manage these packages.
-
-Virtual environments are essential for Python development. They create isolated spaces where you can install packages without affecting other projects. The venv module, included in Python 3.3+, creates lightweight virtual environments.""",
-
-    # Page 2
-    """Python's simplicity makes it an excellent first programming language. Variables don't need type declarations, indentation enforces clean code structure, and the syntax reads almost like English. List comprehensions, generator expressions, and built-in functions like map, filter, and zip make data processing concise.
-
-Error handling in Python uses try-except blocks. You can catch specific exceptions like ValueError or TypeError, or catch all exceptions with a bare except clause (though this is discouraged). The finally block runs cleanup code regardless of whether an exception occurred. Python also supports custom exception classes.
-
-Decorators are a powerful feature in Python that allow you to modify the behavior of functions or classes. A decorator is a function that takes another function as an argument and extends its behavior without explicitly modifying it. Common built-in decorators include @staticmethod, @classmethod, and @property.
-
-Context managers, using the 'with' statement, ensure resources are properly managed. The most common use is file handling: 'with open("file.txt") as f:' guarantees the file is closed after use, even if an exception occurs.""",
-
-    # Page 3
-    """Asynchronous programming in Python is handled through the asyncio module. The async and await keywords make it possible to write concurrent code that is more readable than traditional threading. Asyncio is particularly useful for I/O-bound tasks like web scraping, API calls, and database queries.
-
-Python's data model allows classes to emulate built-in types. By implementing special methods like __init__, __str__, __len__, and __getitem__, you can make objects work with built-in functions. This is what makes Python so flexible.
-
-Testing in Python is well-supported through the unittest module (built-in) and pytest (third-party). Unit tests verify individual components, integration tests check that components work together, and end-to-end tests validate complete workflows. Test-driven development (TDD) is a popular methodology.
-
-Type hints, introduced in Python 3.5 with PEP 484, allow developers to annotate function signatures and variable types. While Python remains dynamically typed at runtime, type hints enable static analysis tools like mypy to catch type-related bugs before execution. Modern Python codebases increasingly use type hints for better documentation and IDE support.""",
-]
-
-ML_PDF_PAGES = [
-    # Page 1
-    """Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. The fundamental idea is that machines can identify patterns in data and make decisions with minimal human intervention.
-
-There are three main types of machine learning. Supervised learning uses labeled training data where the algorithm learns from examples with correct answers provided. Common algorithms include linear regression, decision trees, random forests, and neural networks. These are used for spam detection, image classification, and price prediction.
-
-Unsupervised learning works with unlabeled data, finding hidden patterns and structures. Clustering algorithms like K-means group similar data points together. Dimensionality reduction techniques like PCA compress high-dimensional data while preserving important information. These are used for customer segmentation and anomaly detection.""",
-
-    # Page 2
-    """Reinforcement learning is the third paradigm, where an agent learns by interacting with an environment. The agent receives rewards or penalties for its actions and learns to maximize cumulative reward. This approach has achieved remarkable results in game playing (AlphaGo), robotics, and autonomous driving.
-
-Deep learning uses neural networks with many layers to learn complex patterns. Convolutional Neural Networks (CNNs) excel at image recognition. Recurrent Neural Networks (RNNs) and their variants like LSTM handle sequential data. Transformers have revolutionized natural language processing and are the foundation for GPT and BERT.
-
-Transfer learning has dramatically reduced the cost of training models. Instead of training from scratch, you start with a pre-trained model and fine-tune it for your specific task. This works because early layers learn general features that are useful across many tasks.""",
-
-    # Page 3
-    """RAG (Retrieval-Augmented Generation) combines information retrieval with text generation. Instead of relying solely on training data, RAG retrieves relevant documents from an external knowledge base and uses them as context for generating responses. This reduces hallucinations and keeps answers up-to-date.
-
-Embeddings are dense vector representations of text. Similar meanings produce similar vectors, enabling semantic search. Models like all-MiniLM-L6-v2 convert text into 384-dimensional vectors. Vector databases like ChromaDB, Pinecone, and Weaviate store and search these embeddings efficiently using algorithms like HNSW.
-
-The AI development workflow typically involves: data collection, data preprocessing, feature engineering, model selection, training, evaluation, hyperparameter tuning, and deployment. MLOps practices bring DevOps principles to machine learning, ensuring reproducibility, monitoring, and continuous improvement of models in production.""",
-]
-
 
 # Short document collections for Steps 2-3
 TECH_DOCUMENTS_25 = [
