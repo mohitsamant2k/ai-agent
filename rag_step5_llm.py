@@ -33,10 +33,10 @@ This file demonstrates:
 """
 
 import os
-import re
 import time
 import numpy as np
 import chromadb
+from dotenv import load_dotenv
 from rag_utils import (
     load_embedding_model, recursive_chunk, distance_to_similarity,
     PYTHON_DOC, AI_DOC, WEBDEV_DOC,
@@ -97,70 +97,47 @@ print(f"✅ Knowledge base ready: {collection.count()} chunks from {len(document
 
 from openai import OpenAI
 
-# Try to get API key
-api_key = os.environ.get("OPENAI_API_KEY", "")
-HAS_API_KEY = bool(api_key)
+# Load Azure OpenAI credentials from .env file
+load_dotenv()
 
-if HAS_API_KEY:
-    llm_client = OpenAI(api_key=api_key)
-    print("🔑 OpenAI API key found! Will use real GPT responses.\n")
-else:
-    llm_client = None
-    print("⚠️  No OPENAI_API_KEY environment variable found.")
-    print("   Will show constructed prompts + simulated responses.")
-    print("   To use real GPT: set OPENAI_API_KEY=sk-... in your environment\n")
+azure_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT", "")
+azure_api_key = os.environ.get("AZURE_OPENAI_API_KEY", "")
+azure_model = os.environ.get("AZURE_OPENAI_MODEL", "gpt-4.1-mini")
+
+if not azure_endpoint or not azure_api_key:
+    raise EnvironmentError(
+        "❌ Azure OpenAI credentials not found!\n"
+        "   Create a .env file with:\n"
+        "     AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/openai/v1/chat/completions\n"
+        "     AZURE_OPENAI_API_KEY=your-api-key\n"
+        "     AZURE_OPENAI_MODEL=gpt-4.1-mini"
+    )
+
+# Azure AI Foundry uses OpenAI-compatible endpoint
+# Strip /chat/completions from the endpoint to get the base URL
+base_url = azure_endpoint.rstrip("/")
+if base_url.endswith("/chat/completions"):
+    base_url = base_url[: -len("/chat/completions")]
+
+llm_client = OpenAI(base_url=base_url, api_key=azure_api_key)
+print(f"🔑 Azure OpenAI connected! Model: {azure_model}\n")
 
 
 def call_llm(prompt, system_message="You are a helpful assistant.", temperature=0.3):
-    """Call the LLM with a prompt. Falls back to simulation if no API key."""
-    
-    if HAS_API_KEY:
-        try:
-            response = llm_client.chat.completions.create(
-                model="gpt-4o-mini",  # cheap and fast
-                messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=temperature,
-                max_tokens=500,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            return f"[API Error: {e}]"
-    else:
-        # Simulate a response based on context
-        return _simulate_response(prompt)
-
-
-def _simulate_response(prompt):
-    """Simulate an LLM response for demo purposes (when no API key)."""
-    # Extract context and question from the prompt
-    if "CONTEXT:" in prompt and "QUESTION:" in prompt:
-        context_match = prompt.split("CONTEXT:")[1].split("QUESTION:")[0].strip()
-        question = prompt.split("QUESTION:")[-1].strip()
-        
-        if "do not have enough information" in prompt.lower() or not context_match.strip():
-            return ("I don't have enough information in the provided context "
-                    "to answer this question accurately.")
-        
-        # Return a summary-style response based on context keywords
-        sentences = re.split(r'(?<=[.!?])\s+', context_match)
-        # Pick the most relevant sentences (simple keyword matching)
-        question_words = set(question.lower().split())
-        scored = []
-        for sent in sentences:
-            sent_words = set(sent.lower().split())
-            overlap = len(question_words & sent_words)
-            scored.append((overlap, sent))
-        scored.sort(reverse=True)
-        
-        top_sentences = [s for _, s in scored[:3] if _]
-        if top_sentences:
-            answer = " ".join(top_sentences)
-            return f"Based on the provided context: {answer}"
-        
-    return "[Simulated response — set OPENAI_API_KEY for real answers]"
+    """Call Azure OpenAI LLM with a prompt."""
+    try:
+        response = llm_client.chat.completions.create(
+            model=azure_model,
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=temperature,
+            max_tokens=500,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"[API Error: {e}]"
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
