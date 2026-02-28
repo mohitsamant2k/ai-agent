@@ -93,13 +93,13 @@
 
 **Goal:** Make chatbot self-correcting and intelligent
 
-**Step 10: Corrective RAG (CRAG)**
+**Step 9: Corrective RAG (CRAG)**
 - After retrieval, AI CHECKS if documents are relevant
 - If irrelevant → reformulate query → search again
 - If partially relevant → extract only useful parts
 - 🔨 Build: add relevance checker to pipeline
 
-**Step 11: Self-RAG**
+**Step 10: Self-RAG**
 - AI generates answer + self-critique
 - Check 1: Is the doc relevant to the question?
 - Check 2: Is my answer supported by the doc?
@@ -107,7 +107,7 @@
 - If any check fails → retry with different approach
 - 🔨 Build: add 3 self-checks after generation
 
-**Step 12: Query Transformation**
+**Step 11: Query Transformation**
 - Query decomposition: complex → multiple simple queries
   - "Compare Q1 and Q2 revenue" → 3 sub-queries
 - Query expansion: add related terms
@@ -116,14 +116,14 @@
   - Generate fake answer first → use IT to search
 - 🔨 Build: implement all 3 query transformation techniques
 
-**Step 13: Contextual Retrieval (Anthropic's technique)**
+**Step 12: Contextual Retrieval (Anthropic's technique)**
 - Before embedding, add context to each chunk
 - Original: "Revenue grew 20%"
 - Enhanced: "From Acme Corp 2025 report: Revenue grew 20%"
 - AI adds context at indexing time
 - 🔨 Build: re-index documents with contextual chunks
 
-**Step 14: Agentic RAG**
+**Step 13: Agentic RAG**
 - AI is the DRIVER — decides what to search & when
 - Tools: search_docs, search_web, calculate, summarize
 - AI decides: "I need more info" → searches again
@@ -141,25 +141,25 @@
 
 **Build Project 3: AI Knowledge Assistant (Full)**
 
-**Step 15: Conversation Memory**
+**Step 14: Conversation Memory**
 - Remember previous questions in the session
 - Handle follow-up questions ("What about Q2?")
 - Use AgentSession from agent_framework
 - 🔨 Build: multi-turn RAG chatbot
 
-**Step 16: Multi-Document Support**
+**Step 15: Multi-Document Support**
 - Upload multiple PDFs/files
 - Search across ALL documents
 - Filter by document/category
 - 🔨 Build: document manager (add/delete/list)
 
-**Step 17: Web UI (Streamlit)**
+**Step 16: Web UI (Streamlit)**
 - Chat interface with message bubbles
 - File upload sidebar
 - Source citations with expandable sections
 - 🔨 Build: full Streamlit chat app
 
-**Step 18: Evaluation & Testing**
+**Step 17: Evaluation & Testing**
 - Create test question-answer pairs
 - Measure retrieval accuracy
 - Measure answer quality
@@ -177,19 +177,19 @@
 
 **Goal:** Understand how AI processes pixels
 
-**Step 19: Image Basics in Python**
+**Step 18: Image Basics in Python**
 - Load images with Pillow (PIL)
 - Pixels: each pixel = (R, G, B) = 3 numbers
 - Image = 3D array: height × width × 3
 - 🔨 Build: basic image editor with Pillow
 
-**Step 20: Convolutional Neural Networks (CNN)**
+**Step 19: Convolutional Neural Networks (CNN)**
 - Convolution: filter slides over image, detects edges/shapes
 - Pooling: shrink image, keep important parts
 - Stack layers: edges → shapes → objects → scenes
 - 🔨 Build: image classifier with PyTorch CNN (CIFAR-10)
 
-**Step 21: Transfer Learning**
+**Step 20: Transfer Learning**
 - Use pre-trained ResNet/EfficientNet
 - Fine-tune on YOUR images (only need 100 images)
 - Feature extraction: CNN as "image embedder"
@@ -204,24 +204,24 @@
 
 **Goal:** Build a mini DALL-E to understand how it works
 
-**Step 22: Diffusion on 2D Points**
+**Step 21: Diffusion on 2D Points**
 - Smiley face points → add noise → denoise → new smiley
 - Simplest possible diffusion (50 lines of code)
 - 🔨 Build: 2D point diffusion
 
-**Step 23: Diffusion on Tiny Images (28×28)**
+**Step 22: Diffusion on Tiny Images (28×28)**
 - MNIST digits (0-9)
 - Build noise scheduler (linear, cosine)
 - Build U-Net denoiser
 - 🔨 Build: generate handwritten digits from noise
 
-**Step 24: Add Text Conditioning**
+**Step 23: Add Text Conditioning**
 - "Generate a 7" → model generates image of 7
 - Class conditioning → text conditioning (CLIP)
 - Classifier-free guidance
 - 🔨 Build: conditional digit generator
 
-**Step 25: Understanding the Math**
+**Step 24: Understanding the Math**
 - Forward process: q(x_t | x_0)
 - Reverse process: p(x_{t-1} | x_t)
 - Loss function: predict noise
@@ -237,22 +237,22 @@
 
 **Goal:** Use production-quality image generation
 
-**Step 26: Run Stable Diffusion Locally**
+**Step 25: Run Stable Diffusion Locally**
 - Install diffusers (Hugging Face)
 - SD 1.5 fits in 4GB with: float16 + attention_slicing
 - 🔨 Build: local text-to-image generator
 
-**Step 27: Image-to-Image (img2img)**
+**Step 26: Image-to-Image (img2img)**
 - Photo + prompt + strength → modified photo
 - Style transfer: "make this look like a painting"
 - 🔨 Build: photo style transformer
 
-**Step 28: Inpainting**
+**Step 27: Inpainting**
 - Photo + mask + prompt → edit only masked region
 - "Change only the sky to sunset"
 - 🔨 Build: selective image editor
 
-**Step 29: Outpainting**
+**Step 28: Outpainting**
 - Extend images beyond their borders
 - AI imagines what's beyond the frame
 - 🔨 Build: image extender tool
@@ -266,22 +266,22 @@
 
 **Goal:** Precise control over image generation
 
-**Step 30: ControlNet**
+**Step 29: ControlNet**
 - Guide generation with structure (pose, edges, depth)
 - Stick figure → realistic person in same pose
 - 🔨 Build: pose-guided image generator
 
-**Step 31: LoRA (Low-Rank Adaptation)**
+**Step 30: LoRA (Low-Rank Adaptation)**
 - Fine-tune SD on 10-20 images of YOUR subject
 - Tiny adapter (4MB vs 4GB full model)
 - 🔨 Build: train LoRA of your face/art style
 
-**Step 32: IP-Adapter (Image Prompt)**
+**Step 31: IP-Adapter (Image Prompt)**
 - Use reference image as part of prompt
 - Combine reference style with text
 - 🔨 Build: style-reference image generator
 
-**Step 33: AI Image Editor Agent**
+**Step 32: AI Image Editor Agent**
 - LLM + all image tools combined
 - "Make the sky dramatic" → agent picks right tool
 - 🔨 Build: full AI image editing agent
@@ -297,17 +297,17 @@
 
 **Goal:** Understand video = sequence of images + time
 
-**Step 34: Video Basics in Python**
+**Step 33: Video Basics in Python**
 - Video = 30 frames per second
 - Extract/process/re-assemble frames
 - 🔨 Build: basic video processor
 
-**Step 35: Object Detection in Video**
+**Step 34: Object Detection in Video**
 - YOLO: detect objects in each frame
 - Track objects across frames
 - 🔨 Build: video object tracker
 
-**Step 36: Video Understanding with Vision AI**
+**Step 35: Video Understanding with Vision AI**
 - Sample key frames → send to GPT-4o
 - Auto-generate timestamps & descriptions
 - 🔨 Build: auto video summarizer
@@ -321,17 +321,17 @@
 
 **Goal:** Understand Sora-like video generation
 
-**Step 37: Frame Interpolation**
+**Step 36: Frame Interpolation**
 - Generate in-between frames (slow-mo effect)
 - 24fps → 60fps using optical flow
 - 🔨 Build: video frame interpolator
 
-**Step 38: Animated Image Generation**
+**Step 37: Animated Image Generation**
 - AnimateDiff: make SD images move
 - Generate 2-4 second clips from text
 - 🔨 Build: text-to-short-video generator
 
-**Step 39: Video Diffusion Concepts**
+**Step 38: Video Diffusion Concepts**
 - Spacetime patches (height × width × time)
 - Video VAE, temporal consistency
 - Study Sora architecture (needs massive GPU)
@@ -346,23 +346,23 @@
 
 **Goal:** Build AI-powered video editing tools
 
-**Step 40: AI-Powered Video Editing**
+**Step 39: AI-Powered Video Editing**
 - Auto-cut silence & dead air
 - Smart trim: keep only relevant parts
 - Auto-captions with Whisper
 - 🔨 Build: auto video editor
 
-**Step 41: Background Replacement**
+**Step 40: Background Replacement**
 - Segment person from background per frame
 - Replace with image/video
 - 🔨 Build: video background replacer
 
-**Step 42: Style Transfer on Video**
+**Step 41: Style Transfer on Video**
 - Apply artistic style to every frame
 - Temporal coherence (no flickering)
 - 🔨 Build: video style transformer
 
-**Step 43: AI Video Effects**
+**Step 42: AI Video Effects**
 - Object removal from video
 - Face swap (consistent across frames)
 - 🔨 Build: AI video effects toolkit
