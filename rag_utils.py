@@ -11,7 +11,6 @@ Common functions used across multiple step files:
 """
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -20,6 +19,7 @@ from sentence_transformers import SentenceTransformer
 
 def load_embedding_model(model_name="all-MiniLM-L6-v2"):
     """Load the sentence-transformers embedding model."""
+    from sentence_transformers import SentenceTransformer
     print(f"Loading embedding model ({model_name})...")
     model = SentenceTransformer(model_name)
     print("Ready!")

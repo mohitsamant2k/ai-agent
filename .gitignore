@@ -17,6 +17,9 @@ env/
 # ChromaDB data
 chroma_db/
 
+# Generated PDFs
+pdfs/
+
 # IDE
 .vscode/
 .idea/
