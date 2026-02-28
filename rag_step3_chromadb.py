@@ -27,6 +27,10 @@ This file demonstrates:
 import chromadb
 import time
 import numpy as np
+from rag_utils import (
+    cosine_sim, load_embedding_model, distance_to_similarity, similarity_emoji,
+    TECH_DOCUMENTS_25 as documents, TECH_TOPICS_25 as topics,
+)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -50,51 +54,12 @@ collection = client.create_collection(
 print(f"\n✅ Created collection: '{collection.name}'")
 print(f"   ChromaDB handles embeddings automatically!")
 
-# Add documents — notice we DON'T need to call model.encode()!
-documents = [
-    # Python
-    "Python list comprehensions create lists in a single line of code",
-    "Django REST framework is used for building APIs in Python",
-    "Virtual environments isolate Python project dependencies",
-    "Python decorators modify the behavior of functions",
-    "Async and await keywords enable asynchronous programming in Python",
-    
-    # AI/ML
-    "Transformers architecture revolutionized natural language processing",
-    "GPT models predict the next token in a sequence",
-    "Fine-tuning adapts a pre-trained model to a specific task",
-    "RAG combines retrieval with generation for better AI answers",
-    "Embeddings represent words as dense numerical vectors",
-    
-    # Web Dev
-    "React components use JSX to describe user interfaces",
-    "REST APIs use HTTP methods like GET POST PUT DELETE",
-    "CSS Flexbox makes responsive layouts easy to build",
-    "WebSocket enables real-time bidirectional communication",
-    "Docker containers package applications with their dependencies",
-    
-    # Database
-    "SQL JOIN combines rows from two or more tables",
-    "MongoDB stores data as flexible JSON-like documents",
-    "Redis is an in-memory data store used for caching",
-    "PostgreSQL supports both relational and JSON data types",
-    "Database indexing speeds up query performance significantly",
-    
-    # DevOps
-    "CI/CD pipelines automate building testing and deploying code",
-    "Kubernetes orchestrates containerized applications at scale",
-    "Terraform provisions infrastructure using code",
-    "Git branches allow parallel development workflows",
-    "Load balancers distribute traffic across multiple servers",
-]
+# Documents and topics imported from rag_utils (TECH_DOCUMENTS_25, TECH_TOPICS_25)
 
 # Each document needs a unique ID
 ids = [f"doc_{i}" for i in range(len(documents))]
 
-# Metadata — extra info we can filter on later!
-topics = (["python"] * 5 + ["ai_ml"] * 5 + ["webdev"] * 5 + 
-          ["database"] * 5 + ["devops"] * 5)
-
+# Metadata — extra info we can filter on later! (topics imported from rag_utils)
 metadatas = [{"topic": topic, "index": i} for i, topic in enumerate(topics)]
 
 # Add everything to ChromaDB in one call
@@ -336,13 +301,12 @@ print("=" * 65)
 from sentence_transformers import SentenceTransformer
 
 print("\nLoading sentence-transformers model for manual comparison...")
-st_model = SentenceTransformer("all-MiniLM-L6-v2")
+st_model = load_embedding_model()
 
 # Manual approach (from Step 2)
 manual_embeddings = st_model.encode(documents)
 
-def cosine_sim(a, b):
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+# cosine_sim imported from rag_utils
 
 query_text = "How to build a web application?"
 query_emb = st_model.encode(query_text)

@@ -23,16 +23,14 @@ This file demonstrates:
 """
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from rag_utils import load_embedding_model, cosine_sim as cosine_similarity
 
 # ─── Load the embedding model ───────────────────────────────────────────────
 # "all-MiniLM-L6-v2" is a small, fast model (80MB)
 # It converts any sentence → 384 numbers
 # First run downloads the model, then it's cached locally
 
-print("Loading embedding model (first time downloads ~80MB)...")
-model = SentenceTransformer("all-MiniLM-L6-v2")
-print("Model loaded!\n")
+model = load_embedding_model()
 
 
 # ─── Part 1: See what an embedding looks like ────────────────────────────────
@@ -75,8 +73,7 @@ all_sentences = similar_sentences + different_sentences
 embeddings = model.encode(all_sentences)
 
 # Cosine similarity: how "close" two vectors are (1.0 = identical, 0.0 = unrelated)
-def cosine_similarity(a, b):
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+# (imported from rag_utils as cosine_similarity)
 
 print(f"\nBase sentence: \"{similar_sentences[0]}\"\n")
 print("Comparing with similar sentences:")

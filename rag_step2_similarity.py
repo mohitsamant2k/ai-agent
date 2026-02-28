@@ -23,11 +23,9 @@ This file demonstrates:
 
 import numpy as np
 import time
-from sentence_transformers import SentenceTransformer
+from rag_utils import load_embedding_model, cosine_sim
 
-print("Loading model...")
-model = SentenceTransformer("all-MiniLM-L6-v2")
-print("Ready!\n")
+model = load_embedding_model()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -56,9 +54,7 @@ vectors = {
     "TechFood": vec_both,
 }
 
-def cosine_sim(a, b):
-    """Direction similarity: -1 (opposite) to 1 (same direction)"""
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+# cosine_sim imported from rag_utils
 
 def dot_product(a, b):
     """Direction + magnitude: higher if both point same way AND are large"""

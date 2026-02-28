@@ -31,58 +31,23 @@ This file demonstrates:
 
 import time
 import numpy as np
-from sentence_transformers import SentenceTransformer
-import chromadb
 import re
 import textwrap
+import chromadb
+from rag_utils import (
+    load_embedding_model, cosine_sim, recursive_chunk,
+    PYTHON_DOC as SAMPLE_DOCUMENT, AI_DOC as AI_DOCUMENT,
+)
 
 
 # We'll use this model throughout
-print("Loading embedding model...")
-model = SentenceTransformer("all-MiniLM-L6-v2")
-print("Ready!\n")
+model = load_embedding_model()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# First, let's create a REAL multi-paragraph document to work with
+# SAMPLE_DOCUMENT and AI_DOCUMENT imported from rag_utils
+# (as PYTHON_DOC → SAMPLE_DOCUMENT, AI_DOC → AI_DOCUMENT)
 # ═══════════════════════════════════════════════════════════════════════════════
-
-SAMPLE_DOCUMENT = """
-Python is a high-level, interpreted programming language created by Guido van Rossum and first released in 1991. It emphasizes code readability with its notable use of significant whitespace. Python supports multiple programming paradigms, including structured, object-oriented, and functional programming.
-
-One of Python's key strengths is its extensive standard library, often described as "batteries included." This library provides modules for file I/O, system calls, sockets, and even interfaces to graphical user interface toolkits like Tk. The standard library reduces the need for external dependencies in many common programming tasks.
-
-Python's package ecosystem is massive, with over 400,000 packages on PyPI (Python Package Index). Popular packages include NumPy for numerical computing, Pandas for data analysis, Flask and Django for web development, and TensorFlow and PyTorch for machine learning. The pip package manager makes it easy to install and manage these packages.
-
-Virtual environments are essential for Python development. They create isolated spaces where you can install packages without affecting other projects. The venv module, included in Python 3.3+, creates lightweight virtual environments. Tools like conda provide more comprehensive environment management, including non-Python dependencies.
-
-Python's simplicity makes it an excellent first programming language. Variables don't need type declarations, indentation enforces clean code structure, and the syntax reads almost like English. List comprehensions, generator expressions, and built-in functions like map, filter, and zip make data processing concise and elegant.
-
-Error handling in Python uses try-except blocks. You can catch specific exceptions like ValueError or TypeError, or catch all exceptions with a bare except clause (though this is discouraged). The finally block runs cleanup code regardless of whether an exception occurred. Python also supports custom exception classes that inherit from the Exception base class.
-
-Decorators are a powerful feature in Python that allow you to modify the behavior of functions or classes. A decorator is a function that takes another function as an argument and extends its behavior without explicitly modifying it. Common built-in decorators include @staticmethod, @classmethod, and @property. Decorators are widely used in web frameworks like Flask for routing.
-
-Asynchronous programming in Python is handled through the asyncio module. The async and await keywords, introduced in Python 3.5, make it possible to write concurrent code that is more readable than traditional threading approaches. Asyncio is particularly useful for I/O-bound tasks like web scraping, API calls, and database queries where the program spends most of its time waiting for external responses.
-
-Python's data model, sometimes called the "dunder" (double underscore) model, allows classes to emulate built-in types. By implementing special methods like __init__, __str__, __repr__, __len__, and __getitem__, you can make your objects work with built-in functions and operators. This is what makes Python so flexible — everything is an object, and objects can be customized to behave however you want.
-
-Testing in Python is well-supported through the unittest module (built-in) and pytest (third-party). Unit tests verify individual components work correctly, integration tests check that components work together, and end-to-end tests validate complete workflows. Test-driven development (TDD) is a popular methodology where you write tests before writing the actual code.
-""".strip()
-
-# Also create documents about other topics for variety
-AI_DOCUMENT = """
-Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. The fundamental idea is that machines can identify patterns in data and make decisions with minimal human intervention.
-
-There are three main types of machine learning. Supervised learning uses labeled training data — the algorithm learns from examples where the correct answer is provided. Common supervised learning algorithms include linear regression, decision trees, random forests, and neural networks. These are used for tasks like spam detection, image classification, and price prediction.
-
-Unsupervised learning works with unlabeled data, finding hidden patterns and structures. Clustering algorithms like K-means group similar data points together. Dimensionality reduction techniques like PCA (Principal Component Analysis) compress high-dimensional data while preserving important information. These techniques are used for customer segmentation, anomaly detection, and recommendation systems.
-
-Reinforcement learning is the third paradigm, where an agent learns by interacting with an environment. The agent receives rewards or penalties for its actions and learns to maximize cumulative reward over time. This approach has achieved remarkable results in game playing (AlphaGo, Atari games), robotics, and autonomous driving.
-
-Deep learning, a subset of machine learning, uses neural networks with many layers (hence "deep") to learn complex patterns. Convolutional Neural Networks (CNNs) excel at image recognition, Recurrent Neural Networks (RNNs) and their variants like LSTM handle sequential data, and Transformers have revolutionized natural language processing. The transformer architecture, introduced in the "Attention Is All You Need" paper, is the foundation for models like BERT, GPT, and T5.
-
-Transfer learning has dramatically reduced the cost and time of training models. Instead of training from scratch, you start with a pre-trained model (trained on massive datasets) and fine-tune it for your specific task. This approach works because early layers of neural networks learn general features (edges, shapes, basic grammar) that are useful across many tasks.
-""".strip()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -110,8 +75,7 @@ paragraph_embeddings = model.encode(paragraphs)
 query = "How do decorators work in Python?"
 query_embedding = model.encode(query)
 
-def cosine_sim(a, b):
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+# cosine_sim imported from rag_utils
 
 # Search against WHOLE document (1 embedding)
 whole_doc_score = cosine_sim(query_embedding, whole_doc_embedding)
@@ -226,81 +190,13 @@ print("\n" + "=" * 65)
 print("PART 4: Recursive chunking (the industry standard)")
 print("=" * 65)
 
-def recursive_chunk(text, chunk_size=500, chunk_overlap=50):
-    """
-    Recursive character text splitter — same idea as LangChain's.
-    
-    Strategy: Try to split on the LARGEST meaningful boundary first:
-      1. Double newline (paragraph boundary)    ← best
-      2. Single newline (line boundary)
-      3. Sentence ending (. ! ?)
-      4. Space (word boundary)
-      5. Character (last resort)                ← worst
-    """
-    separators = ["\n\n", "\n", ". ", "! ", "? ", " ", ""]
-    
-    def _split_text(text, separators):
-        chunks = []
-        
-        # Find the best separator that exists in the text
-        separator = separators[-1]  # default: empty string (char by char)
-        for sep in separators:
-            if sep in text:
-                separator = sep
-                break
-        
-        # Split using this separator
-        if separator:
-            splits = text.split(separator)
-        else:
-            splits = list(text)  # character by character
-        
-        # Merge small splits into chunks of the target size
-        current_chunk = ""
-        for split in splits:
-            piece = split if not separator else split + separator
-            
-            if len(current_chunk) + len(piece) <= chunk_size:
-                current_chunk += piece
-            else:
-                if current_chunk:
-                    chunks.append(current_chunk.rstrip())
-                
-                # If this single piece is too large, recursively split it
-                if len(piece) > chunk_size:
-                    # Use the next (smaller) separator
-                    remaining_separators = separators[separators.index(separator) + 1:]
-                    if remaining_separators:
-                        sub_chunks = _split_text(piece, remaining_separators)
-                        chunks.extend(sub_chunks)
-                        current_chunk = ""
-                    else:
-                        current_chunk = piece
-                else:
-                    current_chunk = piece
-        
-        if current_chunk.strip():
-            chunks.append(current_chunk.rstrip())
-        
-        return chunks
-    
-    # Get initial chunks
-    raw_chunks = _split_text(text, separators)
-    
-    # Add overlap between chunks
-    if chunk_overlap > 0 and len(raw_chunks) > 1:
-        overlapped_chunks = [raw_chunks[0]]
-        for i in range(1, len(raw_chunks)):
-            # Take the last chunk_overlap chars from previous chunk
-            prev_tail = raw_chunks[i - 1][-chunk_overlap:]
-            # Find a clean break point (word boundary)
-            space_idx = prev_tail.find(" ")
-            if space_idx != -1:
-                prev_tail = prev_tail[space_idx + 1:]
-            overlapped_chunks.append(prev_tail + " " + raw_chunks[i])
-        return overlapped_chunks
-    
-    return raw_chunks
+# recursive_chunk imported from rag_utils
+# It tries to split on the LARGEST meaningful boundary first:
+#   1. Double newline (paragraph boundary)    ← best
+#   2. Single newline (line boundary)
+#   3. Sentence ending (. ! ?)
+#   4. Space (word boundary)
+#   5. Character (last resort)                ← worst
 
 chunks = recursive_chunk(SAMPLE_DOCUMENT, chunk_size=500, chunk_overlap=50)
 
